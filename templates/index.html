@@ -1,0 +1,146 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+    <meta charset="UTF-8" />
+    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+    <title>Stock Price Prediction | LSTM Model</title>
+    <style>
+        /* General Styles */
+        body {
+            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
+            background-color: #eef1f5; /* Light, modern background */
+            display: flex;
+            justify-content: center;
+            align-items: center;
+            min-height: 100vh;
+            margin: 0;
+        }
+
+        /* Container for the app content */
+        .container {
+            background-color: #ffffff;
+            padding: 40px;
+            border-radius: 12px;
+            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
+            text-align: center;
+            max-width: 400px;
+            width: 100%;
+        }
+
+        h1 {
+            color: #1a237e; /* Deep indigo for heading */
+            font-size: 1.8em;
+            margin-bottom: 5px;
+        }
+
+        p {
+            color: #616161;
+            margin-bottom: 25px;
+        }
+
+        /* Button Styling */
+        #predictBtn {
+            background-color: #007bff;
+            border: none;
+            color: white;
+            padding: 12px 25px;
+            border-radius: 8px;
+            cursor: pointer;
+            font-size: 16px;
+            transition: background-color 0.3s, transform 0.1s;
+        }
+
+        #predictBtn:hover:not(:disabled) {
+            background-color: #0056b3;
+            transform: translateY(-2px);
+        }
+
+        #predictBtn:disabled {
+            background-color: #90a4ae; /* Grey out when disabled/loading */
+            cursor: not-allowed;
+        }
+
+        /* Result Display Styling */
+        #result {
+            margin-top: 30px;
+            padding: 20px 15px;
+            border: 1px solid #cfd8dc;
+            border-radius: 8px;
+            background-color: #f7f9fa;
+            font-size: 1.1em;
+            text-align: left;
+            opacity: 0; /* Start hidden */
+            transition: opacity 0.5s;
+        }
+
+        .result-date {
+            font-weight: 600;
+            color: #3f51b5; /* Indigo for date */
+        }
+
+        .result-price {
+            font-weight: bold;
+            color: #4caf50; /* Green for price */
+            font-size: 1.2em;
+        }
+    </style>
+</head>
+<body>
+    <div class="container">
+        <h1>📈 LSTM Stock Market Prediction</h1>
+        <p>Get the predicted closing price for the next trading day.</p>
+        
+        <button id="predictBtn" onclick="predict()">Predict Next Day</button>
+        
+        <div id="result">
+            <p><strong>Prediction Status:</strong> Awaiting request...</p>
+        </div>
+    </div>
+
+    <script>
+        const predictBtn = document.getElementById("predictBtn");
+        const resultDiv = document.getElementById("result");
+
+        async function predict() {
+            // 1. Set Loading State
+            predictBtn.disabled = true;
+            predictBtn.textContent = "Predicting...";
+            resultDiv.style.opacity = 0; // Hide old result
+            resultDiv.innerHTML = '<p><strong>Prediction Status:</strong> Fetching model data...</p>';
+            
+            try {
+                // 2. Fetch Data
+                const res = await fetch("/predict", { method: "POST" });
+                
+                if (!res.ok) {
+                    throw new Error(`Server responded with status: ${res.status}`);
+                }
+
+                const data = await res.json();
+                
+                // 3. Display Results
+                const date = data[0].date;
+                const price = data[0].pred_close.toFixed(2);
+
+                resultDiv.innerHTML = `
+                    <p>
+                        <span class="result-date">📅 Predicted Date:</span> ${date}
+                        <br>
+                        <span class="result-price">💰 Predicted Close:</span> $${price}
+                    </p>
+                `;
+                resultDiv.style.opacity = 1;
+
+            } catch (error) {
+                // 4. Handle Error
+                resultDiv.innerHTML = `<p style="color: red;">⚠️ Error: ${error.message}. Check your FastAPI /predict endpoint.</p>`;
+                resultDiv.style.opacity = 1;
+            } finally {
+                // 5. Reset Button
+                predictBtn.disabled = false;
+                predictBtn.textContent = "Predict Next Day";
+            }
+        }
+    </script>
+</body>
+</html>
