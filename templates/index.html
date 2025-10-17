@@ -1,146 +1,334 @@
 <!DOCTYPE html>
 <html lang="en">
 <head>
-    <meta charset="UTF-8" />
-    <meta name="viewport" content="width=device-width, initial-scale=1.0" />
-    <title>Stock Price Prediction | LSTM Model</title>
-    <style>
-        /* General Styles */
-        body {
-            font-family: 'Segoe UI', Tahoma, Geneva, Verdana, sans-serif;
-            background-color: #eef1f5; /* Light, modern background */
-            display: flex;
-            justify-content: center;
-            align-items: center;
-            min-height: 100vh;
-            margin: 0;
-        }
+<meta charset="UTF-8">
+<meta name="viewport" content="width=device-width, initial-scale=1.0">
+<title>📊 StockTrendAI – Real-Time Stock Forecast Dashboard</title>
 
-        /* Container for the app content */
-        .container {
-            background-color: #ffffff;
-            padding: 40px;
-            border-radius: 12px;
-            box-shadow: 0 10px 20px rgba(0, 0, 0, 0.1);
-            text-align: center;
-            max-width: 400px;
-            width: 100%;
-        }
+<!-- Google Font -->
+<link href="https://fonts.googleapis.com/css2?family=Poppins:wght@400;600;700&display=swap" rel="stylesheet">
 
-        h1 {
-            color: #1a237e; /* Deep indigo for heading */
-            font-size: 1.8em;
-            margin-bottom: 5px;
-        }
+<style>
+/* 🌐 GLOBAL STYLES */
+body {
+    margin: 0;
+    font-family: 'Poppins', sans-serif;
+    color: #2c3e50;
+    background: #f4f6f8;
+    transition: background 0.5s ease, color 0.5s ease;
+}
 
-        p {
-            color: #616161;
-            margin-bottom: 25px;
-        }
+body.dark {
+    background: #0d1117;
+    color: #f0f6fc;
+}
 
-        /* Button Styling */
-        #predictBtn {
-            background-color: #007bff;
-            border: none;
-            color: white;
-            padding: 12px 25px;
-            border-radius: 8px;
-            cursor: pointer;
-            font-size: 16px;
-            transition: background-color 0.3s, transform 0.1s;
-        }
+/* HEADER */
+header {
+    text-align: center;
+    padding: 50px 20px 10px;
+}
+header h1 {
+    font-size: 38px;
+    margin-bottom: 8px;
+}
+header p {
+    font-size: 16px;
+    opacity: 0.8;
+}
 
-        #predictBtn:hover:not(:disabled) {
-            background-color: #0056b3;
-            transform: translateY(-2px);
-        }
+/* TOGGLE BUTTON */
+.toggle-container {
+    position: fixed;
+    top: 20px;
+    right: 20px;
+}
+.toggle-btn {
+    background: #2980b9;
+    color: white;
+    border: none;
+    border-radius: 25px;
+    padding: 10px 22px;
+    font-weight: 600;
+    cursor: pointer;
+    transition: 0.3s;
+}
+.toggle-btn:hover {
+    background: #3498db;
+}
+body.dark .toggle-btn {
+    background: #444c56;
+    color: #f0f6fc;
+}
 
-        #predictBtn:disabled {
-            background-color: #90a4ae; /* Grey out when disabled/loading */
-            cursor: not-allowed;
-        }
+/* DASHBOARD SECTION */
+.dashboard {
+    display: flex;
+    flex-wrap: wrap;
+    justify-content: center;
+    gap: 30px;
+    margin: 40px auto;
+    max-width: 1000px;
+}
 
-        /* Result Display Styling */
-        #result {
-            margin-top: 30px;
-            padding: 20px 15px;
-            border: 1px solid #cfd8dc;
-            border-radius: 8px;
-            background-color: #f7f9fa;
-            font-size: 1.1em;
-            text-align: left;
-            opacity: 0; /* Start hidden */
-            transition: opacity 0.5s;
-        }
+/* CARD DESIGN */
+.card {
+    width: 300px;
+    padding: 25px;
+    border-radius: 18px;
+    text-align: center;
+    background: white;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: transform 0.3s ease, box-shadow 0.3s ease;
+}
+body.dark .card {
+    background: #161b22;
+    box-shadow: 0 8px 25px rgba(255,255,255,0.05);
+}
+.card:hover {
+    transform: translateY(-10px);
+    box-shadow: 0 10px 25px rgba(0,0,0,0.2);
+}
+.card svg {
+    width: 60px;
+    height: 60px;
+    margin-bottom: 15px;
+}
+.card h2 {
+    margin-bottom: 10px;
+}
+.card p {
+    font-size: 14px;
+    opacity: 0.85;
+}
+.card a {
+    display: inline-block;
+    margin-top: 15px;
+    background: linear-gradient(135deg, #2980b9, #3498db);
+    color: white;
+    padding: 10px 25px;
+    border-radius: 8px;
+    text-decoration: none;
+    font-weight: 600;
+    transition: 0.3s ease;
+}
+.card a:hover {
+    background: linear-gradient(135deg, #3498db, #5dade2);
+}
 
-        .result-date {
-            font-weight: 600;
-            color: #3f51b5; /* Indigo for date */
-        }
+/* NIFTY COLOR THEME */
+.card.nifty svg, .card.nifty h2 {
+    color: #27ae60;
+}
+.card.nifty a {
+    background: linear-gradient(135deg, #27ae60, #2ecc71);
+}
+.card.nifty a:hover {
+    background: linear-gradient(135deg, #2ecc71, #58d68d);
+}
 
-        .result-price {
-            font-weight: bold;
-            color: #4caf50; /* Green for price */
-            font-size: 1.2em;
-        }
-    </style>
+/* CHART AREA */
+.chart-area {
+    background: white;
+    max-width: 950px;
+    margin: 40px auto;
+    padding: 35px;
+    border-radius: 18px;
+    box-shadow: 0 8px 25px rgba(0,0,0,0.1);
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+body.dark .chart-area {
+    background: #161b22;
+    box-shadow: 0 8px 25px rgba(255,255,255,0.05);
+}
+.chart-area h3 {
+    text-align: center;
+    margin-bottom: 25px;
+    font-size: 20px;
+}
+
+/* FOOTER */
+footer {
+    text-align: center;
+    padding: 20px;
+    font-size: 14px;
+    opacity: 0.7;
+}
+
+/* ANIMATION */
+@keyframes pulse {
+    0%, 100% { transform: scale(1); }
+    50% { transform: scale(1.25); }
+}
+</style>
 </head>
+
 <body>
-    <div class="container">
-        <h1>📈 LSTM Stock Market Prediction</h1>
-        <p>Get the predicted closing price for the next trading day.</p>
-        
-        <button id="predictBtn" onclick="predict()">Predict Next Day</button>
-        
-        <div id="result">
-            <p><strong>Prediction Status:</strong> Awaiting request...</p>
-        </div>
+<!-- Dark Mode Toggle -->
+<div class="toggle-container">
+    <button class="toggle-btn" id="toggleTheme">🌙 Dark Mode</button>
+</div>
+
+<!-- Header -->
+<header>
+    <h1>📈 StockTrendAI Dashboard</h1>
+    <p>AI-powered Real-Time Stock Forecasting (LSTM Model)</p>
+</header>
+
+<!-- Dashboard Cards -->
+<section class="dashboard">
+    <div class="card bse">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#2980b9" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 3v18h18"/>
+            <path d="m18 17-6-6-4 4-3-3"/>
+            <path d="M14 11h7v7"/>
+        </svg>
+        <h2 style="color:#2980b9;">BSE Forecast</h2>
+        <p>Predict Sensex trends powered by AI-based forecasting.</p>
+        <a href="/BSE">Open BSE Model</a>
     </div>
 
-    <script>
-        const predictBtn = document.getElementById("predictBtn");
-        const resultDiv = document.getElementById("result");
+    <div class="card nifty">
+        <svg xmlns="http://www.w3.org/2000/svg" fill="none" stroke="#27ae60" stroke-width="2" viewBox="0 0 24 24">
+            <path d="M3 3v18h18"/>
+            <path d="m6 15 4-4 3 3 5-5"/>
+            <path d="M14 11h7v7"/>
+        </svg>
+        <h2>NIFTY Forecast</h2>
+        <p>Analyze NIFTY 50 trends using deep learning models.</p>
+        <a href="/NIFTY">Open NIFTY Model</a>
+    </div>
+</section>
 
-        async function predict() {
-            // 1. Set Loading State
-            predictBtn.disabled = true;
-            predictBtn.textContent = "Predicting...";
-            resultDiv.style.opacity = 0; // Hide old result
-            resultDiv.innerHTML = '<p><strong>Prediction Status:</strong> Fetching model data...</p>';
-            
-            try {
-                // 2. Fetch Data
-                const res = await fetch("/predict", { method: "POST" });
-                
-                if (!res.ok) {
-                    throw new Error(`Server responded with status: ${res.status}`);
+<!-- Live Chart -->
+<section class="chart-area">
+    <h3>📊 Real-Time Stock Movement (Enhanced Visualization)</h3>
+    <canvas id="liveChart" height="400"></canvas>
+</section>
+
+<footer>
+    © 2025 StockTrendAI | Powered by Deep Learning
+</footer>
+
+<!-- Chart.js -->
+<script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+<script>
+// 🧠 Create gradient colors
+function createGradient(ctx, color1, color2) {
+    const gradient = ctx.createLinearGradient(0, 0, 0, 400);
+    gradient.addColorStop(0, color1);
+    gradient.addColorStop(1, color2);
+    return gradient;
+}
+
+const ctx = document.getElementById("liveChart").getContext("2d");
+let gradientBSE = createGradient(ctx, "rgba(41,128,185,0.4)", "rgba(41,128,185,0)");
+let gradientNIFTY = createGradient(ctx, "rgba(39,174,96,0.4)", "rgba(39,174,96,0)");
+
+const liveChart = new Chart(ctx, {
+    type: "line",
+    data: {
+        labels: ["Mon", "Tue", "Wed", "Thu", "Fri"],
+        datasets: [
+            {
+                label: "BSE Sensex",
+                data: [72000, 72300, 72800, 72600, 73100],
+                borderColor: "#3498db",
+                backgroundColor: gradientBSE,
+                fill: true,
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                pointHoverBackgroundColor: "#3498db",
+                pointBackgroundColor: "#2980b9",
+                shadowBlur: 15,
+            },
+            {
+                label: "NIFTY 50",
+                data: [21500, 21750, 21600, 21900, 22050],
+                borderColor: "#2ecc71",
+                backgroundColor: gradientNIFTY,
+                fill: true,
+                borderWidth: 3,
+                tension: 0.4,
+                pointRadius: 6,
+                pointHoverRadius: 9,
+                pointHoverBackgroundColor: "#2ecc71",
+                pointBackgroundColor: "#27ae60"
+            }
+        ]
+    },
+    options: {
+        animation: {
+            duration: 1500,
+            easing: "easeInOutQuart"
+        },
+        responsive: true,
+        interaction: { mode: "index", intersect: false },
+        plugins: {
+            legend: {
+                position: "top",
+                labels: { color: "#2c3e50", font: { size: 14, weight: 600 } }
+            },
+            tooltip: {
+                backgroundColor: "rgba(0,0,0,0.8)",
+                titleColor: "#fff",
+                bodyColor: "#eee",
+                callbacks: {
+                    label: (ctx) => `${ctx.dataset.label}: ₹${ctx.parsed.y.toFixed(2)}`
                 }
-
-                const data = await res.json();
-                
-                // 3. Display Results
-                const date = data[0].date;
-                const price = data[0].pred_close.toFixed(2);
-
-                resultDiv.innerHTML = `
-                    <p>
-                        <span class="result-date">📅 Predicted Date:</span> ${date}
-                        <br>
-                        <span class="result-price">💰 Predicted Close:</span> $${price}
-                    </p>
-                `;
-                resultDiv.style.opacity = 1;
-
-            } catch (error) {
-                // 4. Handle Error
-                resultDiv.innerHTML = `<p style="color: red;">⚠️ Error: ${error.message}. Check your FastAPI /predict endpoint.</p>`;
-                resultDiv.style.opacity = 1;
-            } finally {
-                // 5. Reset Button
-                predictBtn.disabled = false;
-                predictBtn.textContent = "Predict Next Day";
+            }
+        },
+        scales: {
+            x: {
+                ticks: { color: "#2c3e50" },
+                grid: { color: "rgba(0,0,0,0.05)", lineWidth: 1.2 }
+            },
+            y: {
+                ticks: { color: "#2c3e50" },
+                grid: { color: "rgba(0,0,0,0.05)", lineWidth: 1.2 }
             }
         }
-    </script>
+    }
+});
+
+// 🌙 DARK MODE TOGGLE
+const btn = document.getElementById("toggleTheme");
+btn.addEventListener("click", () => {
+    document.body.classList.toggle("dark");
+    const isDark = document.body.classList.contains("dark");
+    btn.textContent = isDark ? "☀️ Light Mode" : "🌙 Dark Mode";
+    updateChartTheme(isDark);
+});
+
+// 🎨 Update Chart Colors in Dark Mode
+function updateChartTheme(isDark) {
+    const textColor = isDark ? "#f0f6fc" : "#2c3e50";
+    const gridColor = isDark ? "#444c56" : "rgba(0,0,0,0.05)";
+    liveChart.options.scales.x.ticks.color = textColor;
+    liveChart.options.scales.y.ticks.color = textColor;
+    liveChart.options.scales.x.grid.color = gridColor;
+    liveChart.options.scales.y.grid.color = gridColor;
+    liveChart.options.plugins.legend.labels.color = textColor;
+    liveChart.update();
+}
+
+// 🔁 Simulated Live Update
+setInterval(() => {
+    const nextLabel = "Day " + (liveChart.data.labels.length + 1);
+    const bseLast = liveChart.data.datasets[0].data.slice(-1)[0];
+    const niftyLast = liveChart.data.datasets[1].data.slice(-1)[0];
+    liveChart.data.labels.push(nextLabel);
+    liveChart.data.datasets[0].data.push(bseLast + (Math.random() - 0.5) * 150);
+    liveChart.data.datasets[1].data.push(niftyLast + (Math.random() - 0.5) * 80);
+    if (liveChart.data.labels.length > 15) {
+        liveChart.data.labels.shift();
+        liveChart.data.datasets.forEach(d => d.data.shift());
+    }
+    liveChart.update("none");
+}, 3000);
+</script>
 </body>
 </html>

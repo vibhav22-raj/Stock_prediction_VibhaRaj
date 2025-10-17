@@ -1,0 +1,269 @@
+<!DOCTYPE html>
+<html lang="en">
+<head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>NIFTY Market Forecast | StockTrendAI</title>
+  <script src="https://cdn.tailwindcss.com"></script>
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
+
+  <style>
+    body {
+      font-family: 'Inter', sans-serif;
+      transition: background 0.5s, color 0.5s;
+      min-height: 100vh;
+    }
+
+    :root {
+      --bg: #f8fafc;
+      --text: #0f172a;
+      --card-bg: #ffffff;
+      --accent: #16a34a;
+      --subtext: #475569;
+      --button-bg: #e2e8f0;
+      --button-text: #0f172a;
+      --button-hover: #d1d5db;
+      --table-header-bg: rgba(22,163,74,0.1);
+      --table-header-text: #16a34a;
+      --grid-color: #e2e8f0;
+    }
+
+    .dark {
+      --bg: #0b1120;
+      --text: #e2e8f0;
+      --card-bg: #1e293b;
+      --accent: #22c55e;
+      --subtext: #94a3b8;
+      --button-bg: #334155;
+      --button-text: #e2e8f0;
+      --button-hover: #475569;
+      --table-header-bg: rgba(34,197,94,0.2);
+      --table-header-text: #22c55e;
+      --grid-color: #475569;
+    }
+
+    .card {
+      background: var(--card-bg);
+      border-radius: 1rem;
+      box-shadow: 0 8px 25px rgba(0, 0, 0, 0.2);
+      transition: transform 0.3s ease, box-shadow 0.3s ease;
+    }
+
+    .card:hover {
+      transform: translateY(-4px);
+      box-shadow: 0 12px 28px rgba(0, 0, 0, 0.25);
+    }
+
+    .fade-in {
+      animation: fadeIn 0.5s ease-in;
+    }
+
+    @keyframes fadeIn {
+      from { opacity: 0; transform: translateY(10px); }
+      to { opacity: 1; transform: translateY(0); }
+    }
+
+    .btn {
+      display: inline-flex;
+      align-items: center;
+      gap: 8px;
+      background-color: var(--button-bg);
+      color: var(--button-text);
+      border: 1px solid transparent;
+      border-radius: 9999px;
+      font-weight: 500;
+      padding: 0.6rem 1.4rem;
+      transition: all 0.3s ease;
+      box-shadow: inset 0 0 0 1px rgba(255, 255, 255, 0.05);
+    }
+
+    .btn:hover {
+      background-color: var(--button-hover);
+      transform: translateY(-1px);
+    }
+
+    .btn:active {
+      transform: scale(0.98);
+    }
+
+    table th {
+      background-color: var(--table-header-bg);
+      color: var(--table-header-text);
+    }
+
+    table td {
+      color: var(--text);
+    }
+  </style>
+</head>
+
+<body class="bg-[color:var(--bg)] text-[color:var(--text)] transition-colors duration-500 p-6">
+
+  <!-- Header -->
+  <header class="max-w-6xl mx-auto flex justify-between items-center mb-10 fade-in">
+    <div class="flex items-center gap-3">
+      <img src="https://cdn-icons-png.flaticon.com/512/1055/1055646.png" class="w-10 h-10" alt="logo">
+      <div>
+        <h1 class="text-4xl font-bold text-[color:var(--accent)]">NIFTY Market Forecast</h1>
+        <p class="text-[color:var(--subtext)] text-sm">AI-powered forecasting using LSTM & FastAPI</p>
+      </div>
+    </div>
+
+    <div class="flex items-center gap-3">
+      <button id="newsBtn" class="btn">📰 Live News</button>
+      <button id="themeToggle" class="btn">🌙 Light Mode</button>
+    </div>
+  </header>
+
+  <main class="max-w-6xl mx-auto card p-8 fade-in">
+    <!-- Forecast Form -->
+    <section class="mb-10">
+      <h2 class="text-2xl font-semibold text-[color:var(--accent)] mb-4">Forecast Setup</h2>
+      <form action="/forecast_nifty" method="post" class="grid sm:grid-cols-3 gap-4 items-center bg-[#1e293b0d] dark:bg-[#334155] p-4 rounded-xl shadow-inner">
+        <div class="sm:col-span-2">
+          <label for="days" class="block text-sm font-medium mb-1 text-[color:var(--subtext)]">Forecast Days (1–30)</label>
+          <input type="number" id="days" name="days" value="5" min="1" max="30" required
+                 class="w-full px-4 py-2 border border-[color:var(--accent)] rounded-lg focus:ring-2 focus:ring-[color:var(--accent)] focus:outline-none dark:bg-slate-700 dark:text-white">
+        </div>
+        <button type="submit" class="btn w-full sm:w-auto justify-center">
+          🚀 Run Forecast
+        </button>
+      </form>
+    </section>
+
+    {% if forecast %}
+    <section class="fade-in">
+      <h2 class="text-2xl font-semibold text-[color:var(--accent)] mb-4 border-b border-[color:var(--accent)] pb-2">Predicted Closing Prices</h2>
+
+      <!-- Table Heading -->
+      <div class="mb-4">
+        <h3 class="text-xl font-semibold text-[color:var(--accent)] mb-2">Forecast Table</h3>
+      </div>
+
+      <!-- Forecast Table -->
+      <div class="overflow-x-auto rounded-lg shadow-md mb-8">
+        <table class="min-w-full bg-[color:var(--card-bg)]">
+          <thead>
+            <tr class="uppercase text-sm leading-normal">
+              <th class="py-3 px-6 text-left">Date</th>
+              <th class="py-3 px-6 text-left">Predicted Close</th>
+            </tr>
+          </thead>
+          <tbody>
+            {% for row in forecast %}
+            <tr class="border-b border-gray-200 dark:border-slate-700 hover:bg-[#1e293b1a] dark:hover:bg-slate-700 transition">
+              <td class="py-3 px-6 whitespace-nowrap">{{ row.date }}</td>
+              <td class="py-3 px-6">{{ "%.2f"|format(row.pred_close) }}</td>
+            </tr>
+            {% endfor %}
+          </tbody>
+        </table>
+      </div>
+
+      <!-- Chart -->
+      <div class="mb-8">
+        <canvas id="forecastChart"></canvas>
+      </div>
+    </section>
+    {% endif %}
+
+    <!-- Navigation -->
+    <section class="mt-10 flex flex-wrap justify-center gap-6">
+      <a href="/" class="btn">← Home</a>
+      <a href="/BSE" class="btn">📊 Go to BSE</a>
+    </section>
+  </main>
+
+  <!-- Live News Modal -->
+  <div id="newsModal" class="hidden fixed inset-0 bg-black bg-opacity-50 flex justify-center items-center z-50">
+    <div class="bg-[color:var(--card-bg)] text-[color:var(--text)] rounded-xl shadow-2xl max-w-2xl w-full p-8 relative">
+      <button id="closeNews" class="absolute top-3 right-3 text-[color:var(--subtext)] hover:text-[color:var(--accent)]">✖</button>
+      <h3 class="text-2xl font-semibold text-[color:var(--accent)] mb-3">Live NIFTY Market News</h3>
+      <ul id="newsList" class="space-y-4 text-[color:var(--subtext)] text-sm leading-relaxed">
+        <li>Loading latest updates...</li>
+      </ul>
+    </div>
+  </div>
+
+  {% if forecast %}
+  <script>
+    const labels = {{ forecast | map(attribute='date') | list | safe }};
+    const data = {{ forecast | map(attribute='pred_close') | list | safe }};
+    const ctx = document.getElementById('forecastChart').getContext('2d');
+
+    function getTickColor() {
+      return document.body.classList.contains('dark') ? '#ffffff' : '#0f172a';
+    }
+
+    new Chart(ctx, {
+      type: 'line',
+      data: {
+        labels: labels,
+        datasets: [{
+          label: 'Predicted Close Price',
+          data: data,
+          borderColor: '#16a34a',
+          backgroundColor: 'rgba(22, 163, 74, 0.2)',
+          tension: 0.3,
+          fill: true,
+          pointRadius: 4,
+          pointBackgroundColor: '#16a34a'
+        }]
+      },
+      options: {
+        responsive: true,
+        plugins: {
+          legend: { display: true, labels: { color: getTickColor() } }
+        },
+        scales: {
+          x: { ticks: { color: getTickColor(), font: { size: 12 } }, grid: { color: 'var(--grid-color)' } },
+          y: { ticks: { color: getTickColor(), font: { size: 12 } }, grid: { color: 'var(--grid-color)' } }
+        }
+      }
+    });
+  </script>
+  {% endif %}
+
+  <script>
+    const toggle = document.getElementById('themeToggle');
+    const newsBtn = document.getElementById('newsBtn');
+    const newsModal = document.getElementById('newsModal');
+    const closeNews = document.getElementById('closeNews');
+    const newsList = document.getElementById('newsList');
+
+    toggle.addEventListener('click', () => {
+      document.body.classList.toggle('dark');
+      toggle.innerHTML = document.body.classList.contains('dark')
+        ? "☀️ Light Mode"
+        : "🌙 Dark Mode";
+    });
+
+    newsBtn.addEventListener('click', () => {
+      newsModal.classList.remove('hidden');
+      loadNews();
+    });
+
+    closeNews.addEventListener('click', () => newsModal.classList.add('hidden'));
+    newsModal.addEventListener('click', e => { if (e.target === newsModal) newsModal.classList.add('hidden'); });
+
+    async function loadNews() {
+      const newsItems = [
+        "NIFTY rises 120 points led by auto and FMCG sectors.",
+        "ITC and Infosys lead market gains as NIFTY nears 23,000 mark.",
+        "Foreign investors pump ₹1,500 crore into Indian equities.",
+        "NIFTY Bank hits record high amid strong Q2 earnings.",
+        "Experts project steady growth for NIFTY in next trading week."
+      ];
+
+      newsList.innerHTML = "";
+      newsItems.forEach((item, i) => {
+        const li = document.createElement('li');
+        li.textContent = `🟢 ${item}`;
+        li.className = "fade-in";
+        li.style.animationDelay = `${i * 0.2}s`;
+        newsList.appendChild(li);
+      });
+    }
+  </script>
+</body>
+</html>
