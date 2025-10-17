@@ -1,5 +1,13 @@
 # 📈 StockTrend AI — Stock Market Forecasting Model  
 
+![Python](https://img.shields.io/badge/Python-3.10%2B-blue?logo=python)
+![TensorFlow](https://img.shields.io/badge/TensorFlow-2.x-orange?logo=tensorflow)
+![Keras](https://img.shields.io/badge/Keras-API-red?logo=keras)
+![License](https://img.shields.io/badge/License-MIT-green)
+![Status](https://img.shields.io/badge/Status-Active-success)
+
+
+
 ## 🧠 Overview  
 **StockTrend AI** is a deep learning–based project designed to forecast stock market trends using historical data.  
 It leverages **Long Short-Term Memory (LSTM)** networks — a specialized form of recurrent neural network (RNN) — to capture long-term dependencies in time-series stock data.  
