@@ -23,6 +23,54 @@ body.dark {
     color: #f0f6fc;
 }
 
+/* 🔐 LOGOUT BUTTON STYLES */
+.logout-container {
+    position: fixed;
+    top: 20px;
+    left: 20px;
+    z-index: 1000;
+    display: flex;
+    align-items: center;
+    gap: 15px;
+    background: white;
+    padding: 10px 20px;
+    border-radius: 25px;
+    box-shadow: 0 2px 10px rgba(0, 0, 0, 0.1);
+    transition: background 0.5s ease, box-shadow 0.5s ease;
+}
+
+body.dark .logout-container {
+    background: #161b22;
+    box-shadow: 0 2px 10px rgba(255, 255, 255, 0.1);
+}
+
+.logout-container .username {
+    color: #333;
+    font-weight: 600;
+    font-size: 14px;
+}
+
+body.dark .logout-container .username {
+    color: #f0f6fc;
+}
+
+.logout-btn {
+    background: linear-gradient(135deg, #e74c3c, #c0392b);
+    color: white;
+    padding: 8px 20px;
+    border-radius: 20px;
+    text-decoration: none;
+    font-size: 14px;
+    font-weight: 600;
+    transition: transform 0.2s, box-shadow 0.2s;
+    display: inline-block;
+}
+
+.logout-btn:hover {
+    transform: translateY(-2px);
+    box-shadow: 0 4px 12px rgba(231, 76, 60, 0.4);
+}
+
 /* HEADER */
 header {
     text-align: center;
@@ -164,6 +212,12 @@ footer {
 </head>
 
 <body>
+<!-- 🔐 LOGOUT BUTTON (TOP LEFT) -->
+<div class="logout-container">
+    <span class="username">👤 {{ username }}</span>
+    <a href="/logout" class="logout-btn">Logout</a>
+</div>
+
 <!-- Dark Mode Toggle -->
 <div class="toggle-container">
     <button class="toggle-btn" id="toggleTheme">🌙 Dark Mode</button>
