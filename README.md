@@ -53,7 +53,7 @@ This project combines **deep learning (TensorFlow/Keras)** with a **modern FastA
 <img width="721" height="915" alt="Image" src="https://github.com/user-attachments/assets/6786c250-2ea6-45f7-87a1-1b832d4db8f0" />
 
 ### Prediction Dashboard
-<img width="1902" height="888" alt="Image" src="https://github.com/user-attachments/assets/20cf101a-699e-4c5e-ab4a-797cc11a9995" />
+<img width="1902" height="888" alt="Image" src="https://github.com/user-attachments/assets/e0ff33ed-e915-46e5-9d6e-bb3322a64725" />
 
 ### Forecast Results
 <img width="1444" height="922" alt="Image" src="https://github.com/user-attachments/assets/968e24d3-a1dc-4d94-a731-bc79d7a05037" />
