@@ -50,7 +50,7 @@ This project combines **deep learning (TensorFlow/Keras)** with a **modern FastA
 ## 📸 Screenshots
 
 ### Login Page
-![Login Screenshot](https://via.placeholder.com/800x400?text=Add+Login+Screenshot)
+<img width="721" height="915" alt="Image" src="https://github.com/user-attachments/assets/6786c250-2ea6-45f7-87a1-1b832d4db8f0" />
 
 ### Prediction Dashboard
 ![Dashboard Screenshot](https://via.placeholder.com/800x400?text=Add+Dashboard+Screenshot)
