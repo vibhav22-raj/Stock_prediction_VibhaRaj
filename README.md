@@ -590,17 +590,11 @@ Open an issue with the `enhancement` label and describe your feature request!
 
 ## 👨‍💻 Author
 
-**[Your Name]**
+**Vibhav Raj**
 
-[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?logo=github)](https://github.com/yourusername)
-[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://linkedin.com/in/yourprofile)
-[![Email](https://img.shields.io/badge/Email-Contact-red?logo=gmail)](mailto:your.email@example.com)
-[![Portfolio](https://img.shields.io/badge/Portfolio-Visit-green?logo=google-chrome)](https://yourportfolio.com)
-
-💼 **About Me:**
-- 🎓 [Your Education/Background]
-- 💻 [Your Expertise]
-- 🌟 [Your Interests]
+[![GitHub](https://img.shields.io/badge/GitHub-Profile-black?logo=github)](https://github.com/vibhav22-raj)
+[![LinkedIn](https://img.shields.io/badge/LinkedIn-Connect-blue?logo=linkedin)](https://www.linkedin.com/in/vibhavraj/)
+[![Email](https://img.shields.io/badge/Email-Contact-red?logo=gmail)](mailto:thevibhav2005@gmail.com)
 
 ---
 
@@ -630,9 +624,8 @@ Special thanks to:
 Open an issue on [GitHub Issues](https://github.com/yourusername/stock-market-forecasting/issues)
 
 ### 💬 Need Help?
-- 📧 Email: your.email@example.com
-- 💬 Discord: [Join our server](https://discord.gg/yourserver)
-- 📱 Twitter: [@yourhandle](https://twitter.com/yourhandle)
+- 📧 Email: thevibhav2005@gmail.com
+
 
 ### 💰 Support the Project
 If you find this project helpful:
